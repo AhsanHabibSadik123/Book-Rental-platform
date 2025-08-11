@@ -150,28 +150,37 @@
                 </ul>
                 
                 <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('profile') }}">
-                                <i class="fas fa-user-edit me-2"></i>Profile
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">
-                                <i class="fas fa-home me-2"></i>User Dashboard
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST" class="d-inline w-100">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                    </button>
-                                </form>
+                        @if(Auth::check())
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ route('profile') }}">
+                                        <i class="fas fa-user-edit me-2"></i>Profile
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ route('dashboard') }}">
+                                        <i class="fas fa-home me-2"></i>User Dashboard
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{{ route('logout') }}" method="POST" class="d-inline w-100">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </li>
-                        </ul>
-                    </li>
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-outline-light me-2" href="{{ route('login') }}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-outline-light" href="{{ route('register') }}">Register</a>
+                            </li>
+                        @endif
                 </ul>
             </div>
         </div>
