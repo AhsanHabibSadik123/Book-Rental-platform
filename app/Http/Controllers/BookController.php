@@ -15,7 +15,7 @@ class BookController extends Controller
     public function index()
     {
         $books = Book::where('lender_id', Auth::id())->latest()->paginate(12);
-        return view('user.index', compact('books'));
+    return view('user.myBooks', compact('books'));
     }
 
     /**
@@ -163,17 +163,27 @@ class BookController extends Controller
         // Validate inputs
         $request->validate([
             'search' => 'nullable|string|max:255',
-            'category' => 'nullable|string|in:Fiction,Non-Fiction,Science,Technology,History,Biography,Romance,Mystery,Fantasy,Self-Help,Education,Children'
+            'category' => 'nullable|string|max:100'
         ]);
 
-        // Build query using scopes
-        $query = Book::available()
-                    ->excludeOwn(Auth::id())
-                    ->search($search)
-                    ->byCategory($category)
-                    ->with('lender');
+    $query = Book::where('status', 'available')->with('lender');
 
-        $books = $query->paginate(12)->appends(['search' => $search, 'category' => $category]);
+        // Add search functionality
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('author', 'LIKE', "%{$search}%")
+                  ->orWhere('genre', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Add category filter
+        if ($category) {
+            $query->where('genre', $category);
+        }
+
+        $books = $query->latest()->paginate(12)->appends(['search' => $search, 'category' => $category]);
 
         return view('user.browseBooks', compact('books', 'search', 'category'));
     }

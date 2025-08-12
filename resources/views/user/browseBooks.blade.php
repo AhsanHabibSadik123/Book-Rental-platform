@@ -1,16 +1,204 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('title', 'Browse Books')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Browse Books - BookStore</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- Global Styles --- */
+        /* Navbar styling */
+        .admin-navbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
 
-@section('content')
-<div class="min-h-screen bg-gray-50 py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Browse Available Books</h1>
-            <p class="text-gray-600">Discover and rent books from our community</p>
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+            font-size: 1.25rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #f8f9fa !important;
+
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+
+        body {
+            background: linear-gradient(135deg, #556a7eff 0%, #556a7eff 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Book card container */
+        .book-card {
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Book image */
+        .book-card img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            background-color: #f8f9fa;
+        }
+
+        /* Book title */
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Book author */
+        .book-author {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Book genre */
+        .book-genre {
+            font-size: 0.85rem;
+            color: #3b82f6;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Book condition */
+        .book-condition {
+            font-size: 0.85rem;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Book price */
+        .book-price {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #16a34a;
+        }
+
+        /* Search & filter box */
+        .bg-white.rounded-lg {
+            border-radius: 10px !important;
+            background-color: #fff;
+        }
+
+        .shadow-sm {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+        }
+
+        /* Search input focus effect */
+        input[type="text"],
+        select {
+            transition: all 0.2s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        /* Empty results alert */
+        .alert-info {
+            background-color: #e0f2fe;
+            border-color: #bae6fd;
+            color: #0369a1;
+        }
+
+        .alert-info h4 {
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg admin-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ route('dashboard') }}">
+                <i class="fas fa-book me-2"></i>BookStore
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav me-auto"></ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user-edit me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('books.index') }}"><i class="fas fa-book me-2"></i>View My Books</a></li>
+                            <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="fas fa-home me-2"></i>User Dashboard</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST" class="d-inline w-100">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
-
+    </nav>
+    <main class="container py-5">
+        <h1 class="mb-4 text-center text-dark">Browse Available Books</h1>
         <!-- Search and Filters -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
             <form action="{{ route('books.browse') }}" method="GET" class="space-y-4">
@@ -24,25 +212,23 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <input 
-                                type="text" 
-                                name="search" 
+                            <input
+                                type="text"
+                                name="search"
                                 id="search"
                                 value="{{ $search }}"
-                                placeholder="Search by title, author, genre..." 
-                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
+                                placeholder="Search by title, author, genre..."
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                     </div>
 
                     <!-- Category Filter -->
                     <div class="md:w-64">
                         <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                        <select 
-                            name="category" 
+                        <select
+                            name="category"
                             id="category"
-                            class="block w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
+                            class="block w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">All Categories</option>
                             <option value="fiction" {{ request('category') == 'fiction' ? 'selected' : '' }}>Fiction</option>
                             <option value="non-fiction" {{ request('category') == 'non-fiction' ? 'selected' : '' }}>Non-Fiction</option>
@@ -61,10 +247,9 @@
 
                     <!-- Search Button -->
                     <div class="flex items-end">
-                        <button 
+                        <button
                             type="submit"
-                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 flex items-center gap-2"
-                        >
+                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 flex items-center gap-2">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -74,16 +259,16 @@
                 </div>
 
                 @if($search || request('category'))
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-sm text-gray-600">Filters: </span>
-                        @if($search)
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Search: "{{ $search }}"</span>
-                        @endif
-                        @if(request('category'))
-                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Category: {{ ucfirst(str_replace('-', ' ', request('category'))) }}</span>
-                        @endif
-                        <a href="{{ route('books.browse') }}" class="text-sm text-gray-500 hover:text-gray-700 underline">Clear all filters</a>
-                    </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-sm text-gray-600">Filters: </span>
+                    @if($search)
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Search: "{{ $search }}"</span>
+                    @endif
+                    @if(request('category'))
+                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Category: {{ ucfirst(str_replace('-', ' ', request('category'))) }}</span>
+                    @endif
+                    <a href="{{ route('books.browse') }}" class="text-sm text-gray-500 hover:text-gray-700 underline">Clear all filters</a>
+                </div>
                 @endif
             </form>
         </div>
@@ -92,193 +277,59 @@
         <div class="mb-6">
             <p class="text-gray-600">
                 @if($books->total() > 0)
-                    Showing {{ $books->firstItem() }} to {{ $books->lastItem() }} of {{ $books->total() }} books
-                    @if($search || request('category'))
-                        @if($search && request('category'))
-                            matching "{{ $search }}" in {{ ucfirst(str_replace('-', ' ', request('category'))) }} category
-                        @elseif($search)
-                            matching "{{ $search }}"
-                        @elseif(request('category'))
-                            in {{ ucfirst(str_replace('-', ' ', request('category'))) }} category
-                        @endif
-                    @endif
+                Showing {{ $books->firstItem() }} to {{ $books->lastItem() }} of {{ $books->total() }} books
+                @if($search || request('category'))
+                @if($search && request('category'))
+                matching "{{ $search }}" in {{ ucfirst(str_replace('-', ' ', request('category'))) }} category
+                @elseif($search)
+                matching "{{ $search }}"
+                @elseif(request('category'))
+                in {{ ucfirst(str_replace('-', ' ', request('category'))) }} category
+                @endif
+                @endif
                 @else
-                    @if($search || request('category'))
-                        @if($search && request('category'))
-                            No books found matching "{{ $search }}" in {{ ucfirst(str_replace('-', ' ', request('category'))) }} category
-                        @elseif($search)
-                            No books found matching "{{ $search }}"
-                        @elseif(request('category'))
-                            No books found in {{ ucfirst(str_replace('-', ' ', request('category'))) }} category
-                        @endif
-                    @else
-                        No books available for rental at the moment
-                    @endif
+                @if($search || request('category'))
+                @if($search && request('category'))
+                No books found matching "{{ $search }}" in {{ ucfirst(str_replace('-', ' ', request('category'))) }} category
+                @elseif($search)
+                No books found matching "{{ $search }}"
+                @elseif(request('category'))
+                No books found in {{ ucfirst(str_replace('-', ' ', request('category'))) }} category
+                @endif
+                @else
+                No books available for rental at the moment
+                @endif
                 @endif
             </p>
         </div>
-
-        @if($books->count() > 0)
-            <!-- Books Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                @foreach($books as $book)
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
-                        <!-- Book Image -->
-                        <div class="aspect-w-3 aspect-h-4 bg-gray-100">
-                            @if($book->image_path)
-                                <img src="{{ asset('storage/' . $book->image_path) }}" alt="{{ $book->title }}" class="w-full h-48 object-cover">
-                            @else
-                                <div class="w-full h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                                    <svg class="h-16 w-16 text-white opacity-50" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
-                            @endif
-                        </div>
-
-                        <!-- Book Details -->
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold text-gray-900 mb-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ $book->title }}</h3>
-                            <p class="text-sm text-gray-600 mb-2">by {{ $book->author }}</p>
-                            
-                            <!-- Genre Badge -->
-                            <span class="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full mb-3">
-                                {{ $book->genre }}
-                            </span>
-
-                            <!-- Condition -->
-                            <div class="flex items-center mb-2">
-                                <span class="text-sm text-gray-500">Condition: </span>
-                                <span class="text-sm font-medium ml-1 
-                                    @if($book->condition === 'excellent') text-green-600
-                                    @elseif($book->condition === 'good') text-blue-600
-                                    @elseif($book->condition === 'fair') text-yellow-600
-                                    @else text-red-600
-                                    @endif">
-                                    {{ ucfirst($book->condition) }}
-                                </span>
-                            </div>
-
-                            <!-- Pricing -->
-                            <div class="mb-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-lg font-bold text-green-600">₹{{ number_format($book->rental_price_per_day, 2) }}/day</span>
-                                </div>
-                                <p class="text-xs text-gray-500">Security deposit: ₹{{ number_format($book->security_deposit, 2) }}</p>
-                            </div>
-
-                            <!-- Lender Info -->
-                            <div class="flex items-center mb-4">
-                                <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center mr-2">
-                                    <span class="text-xs font-medium text-gray-600">{{ substr($book->lender->name, 0, 1) }}</span>
-                                </div>
-                                <span class="text-sm text-gray-600">{{ $book->lender->name }}</span>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="space-y-2">
-                                <a href="{{ route('books.show', $book) }}" 
-                                   class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                                    View Details
-                                </a>
-                                
-                                @if(Auth::user()->role === 'user')
-                                    <button data-book-id="{{ $book->id }}" 
-                                            class="rent-book-btn block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
-                                        Request Rental
-                                    </button>
-                                @endif
-                            </div>
+        <div class="row">
+            @forelse($books as $book)
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="book-card h-100">
+                    <img src="{{ $book->image_path ? asset('storage/' . $book->image_path) : 'https://via.placeholder.com/220x320?text=No+Image' }}" alt="{{ $book->title }}">
+                    <div class="p-3">
+                        <div class="book-title">{{ $book->title }}</div>
+                        <div class="book-author">by {{ $book->author }}</div>
+                        <div class="book-genre">{{ $book->genre }}</div>
+                        <div class="book-condition">Condition: {{ ucfirst($book->condition) }}</div>
+                        <div class="book-price">₹{{ number_format($book->rental_price_per_day, 2) }}/day</div>
+                        <div class="mt-2">
+                            <a href="{{ route('books.show', $book) }}" class="btn btn-primary w-100">View Details</a>
                         </div>
                     </div>
-                @endforeach
-            </div>
-
-            <!-- Pagination -->
-            <div class="mt-8">
-                {{ $books->appends(['search' => $search])->links() }}
-            </div>
-        @else
-            <!-- No Books Found -->
-            <div class="text-center py-12">
-                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                </svg>
-                
-                @if($search)
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">No books found</h3>
-                    <p class="text-gray-500 mb-4">Try adjusting your search terms or browse all available books.</p>
-                    <a href="{{ route('books.browse') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                        View All Books
-                    </a>
-                @else
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">No books available</h3>
-                    <p class="text-gray-500 mb-4">Check back later for new books or contact lenders directly.</p>
-                @endif
-            </div>
-        @endif
-    </div>
-</div>
-
-@if(Auth::user()->role === 'user')
-<!-- Rent Book Modal -->
-<div id="rentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Request Book Rental</h3>
-                    <button onclick="closeRentModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                
-                <p class="text-gray-600 mb-6">Are you sure you want to request this book for rental? The lender will be notified of your request.</p>
-                
-                <div class="flex space-x-3">
-                    <button onclick="closeRentModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                        Cancel
-                    </button>
-                    <button onclick="confirmRental()" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
-                        Send Request
-                    </button>
                 </div>
             </div>
+            @empty
+            <div class="col-12">
+                <div class="alert alert-info text-center py-5">
+                    <i class="fas fa-search fa-2x mb-3"></i>
+                    <h4>No books available for rental at the moment.</h4>
+                </div>
+            </div>
+            @endforelse
         </div>
-    </div>
-</div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 
-<script>
-let selectedBookId = null;
-
-// Use event delegation for better performance and cleaner code
-document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('rent-book-btn')) {
-            e.preventDefault();
-            const bookId = e.target.getAttribute('data-book-id');
-            rentBook(bookId);
-        }
-    });
-});
-
-function rentBook(bookId) {
-    selectedBookId = bookId;
-    document.getElementById('rentModal').classList.remove('hidden');
-}
-
-function closeRentModal() {
-    document.getElementById('rentModal').classList.add('hidden');
-    selectedBookId = null;
-}
-
-function confirmRental() {
-    // Rental functionality has been disabled
-    alert('Rental functionality is currently unavailable.');
-    closeRentModal();
-}
-</script>
-@endif
-@endsection
+</html>

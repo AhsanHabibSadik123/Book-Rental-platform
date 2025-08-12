@@ -5,49 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Dashboard - BookStore</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
+
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #556a7eff 0%, #556a7eff 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         /* Navbar Styling */
+        /* Navbar */
         .admin-navbar {
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
         }
-
         .navbar-brand {
             font-weight: bold;
-            color: white !important;
-            font-size: 1.25rem;
+            font-size: 1.3rem;
+            color: #fff !important;
         }
-
-        .navbar-nav .nav-link {
-            color: white !important;
+        .navbar-nav .nav-link, .navbar-nav .dropdown-item {
+            color: #fff !important;
             font-weight: 500;
         }
-
-        .navbar-nav .nav-link:hover {
-            color: #f8f9fa !important;
+        .navbar-nav .dropdown-menu {
+            background: #34495e;
         }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-radius: 8px;
+        .navbar-nav .dropdown-item:hover {
+            background: #667eea;
+            color: #fff !important;
         }
-
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
+        /* End navbar */
 
         /* Card Styling */
         .card {
@@ -211,11 +204,11 @@
             .stats-card h3 {
                 font-size: 2rem;
             }
-            
+
             .card-body {
                 padding: 1rem;
             }
-            
+
             .search-form .form-control {
                 margin-bottom: 1rem;
             }
@@ -229,15 +222,15 @@
             <a class="navbar-brand" href="{{ route('dashboard') }}">
                 <i class="fas fa-book me-2"></i>BookStore
             </a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
+
             <div class="collapse navbar-collapse" id="adminNavbar">
                 <ul class="navbar-nav me-auto">
                 </ul>
-                
+
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -245,15 +238,17 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('profile') }}">
-                                <i class="fas fa-user-edit me-2"></i>Profile
-                            </a></li>
+                                    <i class="fas fa-user-edit me-2"></i>Profile
+                                </a></li>
                             <li><a class="dropdown-item" href="{{ route('books.index') }}">
-                                <i class="fas fa-book me-2"></i>View My Books
-                            </a></li>
+                                    <i class="fas fa-book me-2"></i>View My Books
+                                </a></li>
                             <li><a class="dropdown-item" href="{{ route('dashboard') }}">
-                                <i class="fas fa-home me-2"></i>User Dashboard
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
+                                    <i class="fas fa-home me-2"></i>User Dashboard
+                                </a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST" class="d-inline w-100">
                                     @csrf
@@ -283,98 +278,11 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Search Books -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card search-form">
-                        <div class="card-body">
-                            <h5 class="card-title mb-3">
-                                <i class="fas fa-search me-2"></i>Search Books
-                            </h5>
-                            <form action="{{ route('books.browse') }}" method="GET" class="row g-3">
-                                <div class="col-md-5">
-                                    <input type="text" 
-                                           class="form-control" 
-                                           name="search" 
-                                           placeholder="Search by book title, author..."
-                                           value="{{ request('search') }}">
-                                </div>
-                                <div class="col-md-3">
-                                    <select class="form-select" name="category">
-                                        <option value="">All Categories</option>
-                                        <option value="fiction" {{ request('category') == 'fiction' ? 'selected' : '' }}>Fiction</option>
-                                        <option value="non-fiction" {{ request('category') == 'non-fiction' ? 'selected' : '' }}>Non-Fiction</option>
-                                        <option value="mystery" {{ request('category') == 'mystery' ? 'selected' : '' }}>Mystery</option>
-                                        <option value="romance" {{ request('category') == 'romance' ? 'selected' : '' }}>Romance</option>
-                                        <option value="science-fiction" {{ request('category') == 'science-fiction' ? 'selected' : '' }}>Science Fiction</option>
-                                        <option value="fantasy" {{ request('category') == 'fantasy' ? 'selected' : '' }}>Fantasy</option>
-                                        <option value="biography" {{ request('category') == 'biography' ? 'selected' : '' }}>Biography</option>
-                                        <option value="history" {{ request('category') == 'history' ? 'selected' : '' }}>History</option>
-                                        <option value="self-help" {{ request('category') == 'self-help' ? 'selected' : '' }}>Self Help</option>
-                                        <option value="business" {{ request('category') == 'business' ? 'selected' : '' }}>Business</option>
-                                        <option value="technology" {{ request('category') == 'technology' ? 'selected' : '' }}>Technology</option>
-                                        <option value="educational" {{ request('category') == 'educational' ? 'selected' : '' }}>Educational</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <i class="fas fa-search me-2"></i>Search Books
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Available Books for Rental -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4><i class="fas fa-book-open me-2"></i>All Available Books for Rental</h4>
-                        </div>
-                        <div class="card-body">
-                            @if($recentBooks->count() > 0)
-                                <div class="row">
-                                    @foreach($recentBooks as $book)
-                                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                                            <div class="card book-card h-100">
-                                                <div class="card-body">
-                                                    <h6 class="card-title">{{ Str::limit($book->title, 25) }}</h6>
-                                                    <p class="text-muted small mb-1">by {{ $book->author }}</p>
-                                                    <p class="text-muted small mb-2">Lender: {{ $book->lender->name }}</p>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <strong class="text-success">₹{{ $book->rental_price_per_day }}/day</strong>
-                                                        <span class="badge bg-success">Available</span>
-                                                    </div>
-                                                    <div class="mt-3">
-                                                        <a href="{{ route('books.show', $book) }}" class="btn btn-primary btn-sm w-100">
-                                                            <i class="fas fa-eye me-1"></i>View & Rent
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                
-                                <div class="text-center mt-4">
-                                    <a href="{{ route('books.browse') }}" class="btn btn-outline-primary">
-                                        <i class="fas fa-search me-2"></i>Browse More Books
-                                    </a>
-                                </div>
-                            @else
-                                <div class="text-center py-5">
-                                    <i class="fas fa-book fa-4x text-muted mb-3"></i>
-                                    <h5>No Books Available</h5>
-                                    <p class="text-muted">There are currently no books available for rental. Check back later!</p>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
+            <!-- View All Available Books Button -->
+            <div class="mt-3 d-flex justify-content-center" style="background: linear-gradient(90deg, #e3e6f0 0%, #f8f9fa 100%); border-radius: 10px; padding: 32px 0; box-shadow: 0 2px 8px rgba(102,126,234,0.08);">
+                <a href="{{ route('books.browse') }}" class="btn btn-outline-primary px-4 py-2 fw-bold" style="font-size: 1.1rem; border-radius: 25px;">
+                    <i class="fas fa-book-open me-2"></i>View All Available Books
+                </a>
             </div>
         </div>
     </main>

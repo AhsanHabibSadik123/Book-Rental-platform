@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 fw-bold text-primary">
+                <h1 class="h3 fw-bold text-white">
                     <i class="fas fa-edit me-2"></i>Edit Book
                 </h1>
                 <div class="d-flex gap-2">

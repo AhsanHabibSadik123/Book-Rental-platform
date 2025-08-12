@@ -16,7 +16,7 @@
     <style>
         /* Global Styles */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #556a7eff 0%, #556a7eff 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #212529;
@@ -27,83 +27,28 @@
         }
         
         /* Admin Navbar */
+                /* Navbar */
         .admin-navbar {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-            padding: 0;
-            border: none;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
         }
-        
-        .admin-navbar .navbar-brand {
+        .navbar-brand {
             font-weight: bold;
-            font-size: 1.5rem;
-            color: #fff !important;
-            padding: 15px 20px;
-            text-decoration: none;
-        }
-        
-        .admin-navbar .navbar-brand:hover {
-            color: #f8f9fa !important;
-        }
-        
-        .admin-navbar .nav-link {
-            color: rgba(255,255,255,0.8) !important;
-            padding: 15px 20px !important;
-            transition: all 0.3s ease;
-            border-right: 1px solid rgba(255,255,255,0.1);
-            text-decoration: none;
-        }
-        
-        .admin-navbar .nav-link:hover {
-            background: rgba(255,255,255,0.1);
+            font-size: 1.3rem;
             color: #fff !important;
         }
-        
-        .admin-navbar .nav-link.active {
-            background: rgba(255,255,255,0.2);
+        .navbar-nav .nav-link, .navbar-nav .dropdown-item {
+            color: #fff !important;
+            font-weight: 500;
+        }
+        .navbar-nav .dropdown-menu {
+            background: #34495e;
+        }
+        .navbar-nav .dropdown-item:hover {
+            background: #667eea;
             color: #fff !important;
         }
-        
-        .admin-navbar .navbar-toggler {
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 4px 8px;
-        }
-        
-        .admin-navbar .navbar-toggler:focus {
-            box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.25);
-        }
-        
-        .admin-navbar .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }
-        
-        .admin-navbar .dropdown-menu {
-            background: #fff;
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-top: 5px;
-        }
-        
-        .admin-navbar .dropdown-item {
-            color: #333 !important;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        
-        .admin-navbar .dropdown-item:hover {
-            background: #f8f9fa;
-            color: #333 !important;
-        }
-        
-        .admin-navbar .dropdown-item.text-danger {
-            color: #dc3545 !important;
-        }
-        
-        .admin-navbar .dropdown-item.text-danger:hover {
-            background: #dc3545;
-            color: #fff !important;
-        }
+        /* End navbar */
         
         /* Main Content */
         .admin-content {
@@ -616,14 +561,12 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 fw-bold text-primary">
-                    <i class="fas fa-book-medical me-2"></i>Book Management
-                </h1>
+                <h2 class="text-white fw-bold">Book Management</h2>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('admin.books.create') }}" class="btn btn-success">
+                    <a href="{{ route('admin.books.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus me-1"></i> Add New Book
                     </a>
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">
                         <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
                     </a>
                 </div>

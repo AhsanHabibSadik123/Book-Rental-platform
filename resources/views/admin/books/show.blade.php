@@ -5,14 +5,14 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 fw-bold text-primary">
+                <h1 class="h3 fw-bold text-white">
                     <i class="fas fa-book-open me-2"></i>Book Details
                 </h1>
                 <div class="d-flex gap-2">
                     <a href="{{ route('admin.books.edit', $book) }}" class="btn btn-warning">
                         <i class="fas fa-edit me-1"></i> Edit Book
                     </a>
-                    <a href="{{ route('admin.books') }}" class="btn btn-secondary">
+                    <a href="{{ route('admin.books') }}" class="btn btn-primary">
                         <i class="fas fa-arrow-left me-1"></i> Back to Books
                     </a>
                 </div>

@@ -27,10 +27,15 @@ Route::middleware('auth')->group(function () {
     
     // Unified user dashboard (replaces separate lender/borrower dashboards)
     Route::get('/user-dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
+    Route::get('/my-books', function () {
+        return view('user.myBooks');
+    })->name('user.myBooks');
     
     Route::get('/profile', function () {
         return view('user.profile');
     })->name('profile');
+    Route::get('/profile/edit', [App\Http\Controllers\DashboardController::class, 'editProfile'])->name('profile.edit');
+    Route::post('/profile/edit', [App\Http\Controllers\DashboardController::class, 'updateProfile'])->name('profile.update');
     
     // Debug route to check user role
     Route::get('/debug-user', function () {

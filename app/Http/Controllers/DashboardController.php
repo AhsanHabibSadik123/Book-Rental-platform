@@ -12,6 +12,31 @@ use Carbon\Carbon;
 class DashboardController extends Controller
 {
     /**
+     * Show the edit profile form
+     */
+    public function editProfile()
+    {
+        return view('user.edit-profile');
+    }
+
+    /**
+     * Handle profile update
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+            'bio' => 'nullable|string|max:1000',
+        ]);
+
+        $user->update($validated);
+        return redirect()->route('profile')->with('success', 'Profile updated successfully!');
+    }
+    /**
      * Show the dashboard - redirect to role-specific dashboard
      */
     public function index(Request $request)
@@ -35,32 +60,24 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-        // Get user statistics from database
-        $stats = $this->getUserStats($user);
-        
-        // Get recent books for browsing (more books for main display)
-        $recentBooks = Book::where('status', 'available')
-                          ->where('lender_id', '!=', $user->id)
-                          ->with('lender')
-                          ->latest()
-                          ->take(12)
-                          ->get();
-                          
-        // Get user's books (for lenders)
-        $myBooks = Book::where('lender_id', $user->id)
-                      ->with('lender')
-                      ->latest()
-                      ->take(5)
-                      ->get();
-                      
-        // Get user's rentals (as borrower)
-        $myRentals = Rental::where('borrower_id', $user->id)
-                          ->with(['book', 'book.lender'])
-                          ->latest()
-                          ->take(5)
-                          ->get();
-        
-        return view('user.userDashboard', compact('stats', 'recentBooks', 'myBooks', 'myRentals'));
+    // Get user statistics from database
+    $stats = $this->getUserStats($user);
+
+    // Get user's books (for lenders)
+    $myBooks = Book::where('lender_id', $user->id)
+              ->with('lender')
+              ->latest()
+              ->take(5)
+              ->get();
+
+    // Get user's rentals (as borrower)
+    $myRentals = Rental::where('borrower_id', $user->id)
+              ->with(['book', 'book.lender'])
+              ->latest()
+              ->take(5)
+              ->get();
+
+    return view('user.userDashboard', compact('stats', 'myBooks', 'myRentals'));
     }
     
     /**
