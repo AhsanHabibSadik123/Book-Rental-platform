@@ -15,7 +15,7 @@ class BookController extends Controller
     public function index()
     {
         $books = Book::where('lender_id', Auth::id())->latest()->paginate(12);
-    return view('user.myBooks', compact('books'));
+        return view('user.myBooks', compact('books'));
     }
 
     /**

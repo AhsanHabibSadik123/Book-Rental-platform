@@ -9,20 +9,13 @@ use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
-    /**
-     * Show the login form
-     */
+
     public function showLoginForm()
     {
         return view('auth.login');
     }
-
-    /**
-     * Handle login request
-     */
     public function login(Request $request)
     {
-        // Validate the request
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',

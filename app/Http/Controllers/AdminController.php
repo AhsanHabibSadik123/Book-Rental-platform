@@ -41,10 +41,6 @@ class AdminController extends Controller
             'recentBooks'
         ));
     }
-
-    /**
-     * Book Management Methods (New System)
-     */
     public function books(Request $request)
     {
         // Check if user is admin

@@ -1,0 +1,36 @@
+/* Register page scoped styles */
+
+/* Full-page background gradient behind the form */
+.register-hero {
+  background: linear-gradient(135deg, #556a7e 0%, #34495e 100%);
+  min-height: 100vh;
+}
+
+/* Navbar gradient for this page */
+.admin-navbar {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.admin-navbar .navbar-brand {
+  font-weight: bold;
+}
+
+/* Card rounding */
+.register-card {
+  border-radius: 20px;
+}
+
+/* Header gradient */
+.register-header {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+/* Primary gradient button */
+.btn-gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  border: none;
+}
+.btn-gradient:hover {
+  opacity: 0.95;
+}

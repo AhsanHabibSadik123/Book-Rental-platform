@@ -1,0 +1,54 @@
+/* Restore previous gradient-based background and navbar colors */
+
+/* Page background */
+body {
+  background: linear-gradient(135deg, #556a7eff 0%, #34495e 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card style similar to before */
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Primary button gradient */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 25px;
+  padding: 12px 30px;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+/* Navbar gradient */
+.admin-navbar {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+}
+
+.admin-navbar .navbar-brand {
+  font-weight: bold;
+  font-size: 1.3rem;
+  color: #fff !important;
+}
+
+.admin-navbar .nav-link,
+.admin-navbar .dropdown-item {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+.admin-navbar .dropdown-menu {
+  background: #34495e;
+}
+
+.admin-navbar .dropdown-item:hover {
+  background: #667eea;
+  color: #fff !important;
+}

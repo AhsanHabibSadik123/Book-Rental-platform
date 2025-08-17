@@ -7,11 +7,13 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SadikController;
 
 // Home page
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/sadik' , [SadikController::class,'showSadik']);
 
 // Authentication Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -24,19 +26,19 @@ Route::post('/register', [RegisterController::class, 'register']);
 // Protected Routes
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Unified user dashboard (replaces separate lender/borrower dashboards)
     Route::get('/user-dashboard', [DashboardController::class, 'userDashboard'])->name('user.dashboard');
     Route::get('/my-books', function () {
         return view('user.myBooks');
     })->name('user.myBooks');
-    
+
     Route::get('/profile', function () {
         return view('user.profile');
     })->name('profile');
     Route::get('/profile/edit', [App\Http\Controllers\DashboardController::class, 'editProfile'])->name('profile.edit');
     Route::post('/profile/edit', [App\Http\Controllers\DashboardController::class, 'updateProfile'])->name('profile.update');
-    
+
     // Debug route to check user role
     Route::get('/debug-user', function () {
         $user = Auth::user();
@@ -48,16 +50,16 @@ Route::middleware('auth')->group(function () {
             'user_role' => $user ? $user->role : null,
         ]);
     });
-    
+
     // Book Routes
     Route::resource('books', BookController::class);
     Route::get('/browse-books', [BookController::class, 'browse'])->name('books.browse');
     Route::get('/home', [BookController::class, 'home'])->name('books.home');
-    
+
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        
+
         // Book Management Routes (New System)
         Route::get('/books', [AdminController::class, 'books'])->name('books');
         Route::get('/books/create', [AdminController::class, 'createBook'])->name('books.create');
@@ -66,7 +68,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/books/{book}/edit', [AdminController::class, 'editBook'])->name('books.edit');
         Route::put('/books/{book}', [AdminController::class, 'updateBook'])->name('books.update');
         Route::delete('/books/{book}', [AdminController::class, 'deleteBook'])->name('books.destroy');
-        
+
         // User Management Routes
         Route::get('/users', [AdminController::class, 'users'])->name('users');
         Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');

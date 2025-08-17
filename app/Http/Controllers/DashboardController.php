@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Rental;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -25,16 +27,47 @@ class DashboardController extends Controller
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
+        /** @var \App\Models\User|null $user */
+        if (!$user instanceof User) {
+            return redirect()->route('login');
+        }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'bio' => 'nullable|string|max:1000',
         ]);
 
-        $user->update($validated);
-        return redirect()->route('profile')->with('success', 'Profile updated successfully!');
+        try {
+            // Only fill allowed fields and save, avoiding any mass-assignment edge cases
+            $user->fill([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
+                'address' => $validated['address'] ?? null,
+                'bio' => $validated['bio'] ?? null,
+            ]);
+
+            $user->save();
+
+            return redirect()->route('profile')->with('success', 'Profile updated successfully!');
+    } catch (\Throwable $e) {
+            // Log the error for debugging and show a friendly message
+            Log::error('Profile update failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->withInput()->withErrors([
+                'profile' => 'Could not update profile. Please try again.',
+            ]);
+        }
     }
     /**
      * Show the dashboard - redirect to role-specific dashboard

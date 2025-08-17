@@ -1,0 +1,53 @@
+/* Login page scoped styles */
+
+/* Page background and centering */
+body {
+  background: linear-gradient(135deg, #556a7e 0%, #34495e 100%);
+  min-height: 100vh;
+}
+
+/* Navbar override for this page */
+.admin-navbar {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.admin-navbar .navbar-brand {
+  font-weight: bold;
+  color: #fff !important;
+  font-size: 1.25rem;
+}
+.admin-navbar .nav-link {
+  color: #fff !important;
+  font-weight: 500;
+}
+.admin-navbar .nav-link:hover {
+  color: #f8f9fa !important;
+}
+
+/* Card styling */
+.card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+.btn-primary:hover {
+  opacity: 0.95;
+}
+
+/* Input group eye button */
+#togglePassword {
+  border-color: #ced4da;
+}
+
+/* Container spacing */
+.container {
+  padding-top: 60px;
+  padding-bottom: 60px;
+}

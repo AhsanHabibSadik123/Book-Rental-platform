@@ -201,92 +201,6 @@
         </div>
     </section>
 
-    <!-- How It Works Section -->
-    <section id="how-it-works" class="py-5 bg-light">
-        <div class="container">
-            <div class="row text-center mb-5">
-                <div class="col-lg-8 mx-auto">
-                    <h2 class="fw-bold mb-3">How It Works</h2>
-                    <p class="text-muted">Get started in just a few simple steps</p>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-3 text-center mb-4">
-                    <div class="mb-3">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
-                             style="width: 60px; height: 60px;">
-                            <span class="fw-bold">1</span>
-                        </div>
-                    </div>
-                    <h5>Sign Up</h5>
-                    <p class="text-muted">Create your account as a borrower, lender, or both</p>
-                </div>
-                
-                <div class="col-md-3 text-center mb-4">
-                    <div class="mb-3">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
-                             style="width: 60px; height: 60px;">
-                            <span class="fw-bold">2</span>
-                        </div>
-                    </div>
-                    <h5>Browse or List</h5>
-                    <p class="text-muted">Find books to rent or list your own collection</p>
-                </div>
-                
-                <div class="col-md-3 text-center mb-4">
-                    <div class="mb-3">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
-                             style="width: 60px; height: 60px;">
-                            <span class="fw-bold">3</span>
-                        </div>
-                    </div>
-                    <h5>Connect</h5>
-                    <p class="text-muted">Request rentals or approve rental requests</p>
-                </div>
-                
-                <div class="col-md-3 text-center mb-4">
-                    <div class="mb-3">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
-                             style="width: 60px; height: 60px;">
-                            <span class="fw-bold">4</span>
-                        </div>
-                    </div>
-                    <h5>Enjoy</h5>
-                    <p class="text-muted">Read great books or earn from your collection</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section id="stats" class="stats-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3 stat-item mb-4">
-                    <div class="stat-number">1000+</div>
-                    <h5>Books Available</h5>
-                    <p class="text-muted">Wide variety of genres</p>
-                </div>
-                <div class="col-md-3 stat-item mb-4">
-                    <div class="stat-number">500+</div>
-                    <h5>Happy Users</h5>
-                    <p class="text-muted">Growing community</p>
-                </div>
-                <div class="col-md-3 stat-item mb-4">
-                    <div class="stat-number">2000+</div>
-                    <h5>Successful Rentals</h5>
-                    <p class="text-muted">Trusted platform</p>
-                </div>
-                <div class="col-md-3 stat-item mb-4">
-                    <div class="stat-number">$50k+</div>
-                    <h5>Earned by Lenders</h5>
-                    <p class="text-muted">Turn books into income</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- CTA Section -->
     <section class="py-5 bg-primary text-white">
         <div class="container text-center">
@@ -297,24 +211,6 @@
             </a>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5><i class="fas fa-book me-2"></i>BookStore</h5>
-                    <p class="text-muted">Your trusted book rental marketplace</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="text-muted mb-0">
-                        &copy; {{ date('Y') }} BookStore. All rights reserved.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -8,64 +8,13 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tailwind CSS removed to prevent Bootstrap conflicts -->
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <style>
-        body {
-            background: linear-gradient(135deg, #556a7eff 0%, #34495e 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.95);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: transform 0.2s;
-        }
-
-        /* Navbar */
-        .admin-navbar {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
-        }
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.3rem;
-            color: #fff !important;
-        }
-        .navbar-nav .nav-link, .navbar-nav .dropdown-item {
-            color: #fff !important;
-            font-weight: 500;
-        }
-        .navbar-nav .dropdown-menu {
-            background: #34495e;
-        }
-        .navbar-nav .dropdown-item:hover {
-            background: #667eea;
-            color: #fff !important;
-        }
-        /* End navbar */
-        
-    </style>
-    
     @yield('styles')
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg admin-navbar">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('dashboard') }}">
                 <i class="fas fa-book me-2"></i>BookStore
@@ -79,7 +28,7 @@
                 <ul class="navbar-nav me-auto">
                 </ul>
 
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ms-auto">
                     @if(Auth::check())
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -116,12 +65,6 @@
                             <a class="nav-link btn btn-outline-light" href="{{ route('register') }}">Register</a>
                         </li>
                     @endif
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-
-                        </ul>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -129,14 +72,12 @@
 
     <!-- Main Content -->
     <main class="py-4">
-        @yield('content')
+        <div class="container">
+            @yield('content')
+        </div>
     </main>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom dropdown JS removed; Bootstrap handles dropdowns automatically -->
-    
     @yield('scripts')
 </body>
 </html>
