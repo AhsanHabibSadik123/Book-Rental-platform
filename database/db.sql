@@ -34,11 +34,12 @@ CREATE TABLE books (
 
 
 INSERT INTO users (name, email, password, phone, address, bio, role, is_verified, wallet, created_at, updated_at) VALUES
-('user1',  'u1@gmail.com',  '$2y$12$Qr4NERgAEtxPuA8N96rEbu3iS0Lgm4/e.7kWp3NuwenmiFy2JVR8a', '01710000005', 'Dhaka', 'I am user5', 'user', 0, 0.00, NOW(), NOW()),
+('user1',  'u1@gmail.com',  '$2y$12$Qr4NERgAEtxPuA8N96rEbu3iS0Lgm4/e.7kWp3NuwenmiFy2JVR8a', '01710000005', 'Dhaka', 'I am user1', 'user', 0, 0.00, NOW(), NOW()),
+('admin',  'admin@gmail.com',  '$2y$12$Qr4NERgAEtxPuA8N96rEbu3iS0Lgm4/e.7kWp3NuwenmiFy2JVR8a', '01710000005', 'Dhaka', 'I am admin', 'admin', 1, 0.00, NOW(), NOW());
 
 INSERT INTO books 
 (`title`, `author`, `isbn`, `description`, `genre`, `condition`, `image_path`, `rental_price_per_day`, `security_deposit`, `rental_duration_max_days`, `is_available`, `lender_id`, `status`, `created_at`, `updated_at`)
 VALUES
-('Fictional Tale', 'Author 1', '9781000000001', 'An amazing fiction story.', 'Fiction', 'excellent', NULL, 0.50, 30.00, 30, 1, 1, 'available', NOW(), NOW()),
+('Fictional Tale', 'Author 1', '9781000000001', 'An amazing fiction story.', 'Fiction', 'excellent', NULL, 0.50, 30.00, 30, 1, 1, 'available', NOW(), NOW())
 
 
