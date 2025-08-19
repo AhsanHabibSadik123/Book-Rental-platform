@@ -198,7 +198,7 @@
         </div>
     </nav>
     <main class="container py-5">
-        <h1 class="mb-4 text-center text-dark">Browse Available Books</h1>
+        <h1 class="mb-4 text-center text-white">Browse Available Books</h1>
         <!-- Search and Filters -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
             <form action="{{ route('books.browse') }}" method="GET" class="space-y-4">

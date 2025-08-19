@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -14,7 +15,14 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = Book::where('lender_id', Auth::id())->latest()->paginate(12);
+        $user = Auth::user();
+
+        if ($user && $user->role === 'admin') {
+            $books = Book::latest()->paginate(12);
+        } else {
+            $books = Book::where('lender_id', Auth::id())->latest()->paginate(12);
+        }
+
         return view('user.myBooks', compact('books'));
     }
 
@@ -23,12 +31,14 @@ class BookController extends Controller
      */
     public function create()
     {
-        // Check if user is a lender
-        if (Auth::user()->role !== 'lender') {
-            return redirect()->route('dashboard')->with('error', 'Only lenders can add books.');
+        // Only admin can add books (on behalf of a user/lender)
+        if (!Auth::user() || Auth::user()->role !== 'admin') {
+            return redirect()->route('dashboard')->with('error', 'Only admin can add books.');
         }
-        
-        return view('books.create');
+
+        // Admin selects the book owner (lender)
+        $users = User::orderBy('name')->get(['id', 'name']);
+        return view('books.create', compact('users'));
     }
 
     /**
@@ -36,9 +46,9 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        // Check if user is a lender
-        if (Auth::user()->role !== 'lender') {
-            return redirect()->route('dashboard')->with('error', 'Only lenders can add books.');
+        // Only admin can add books
+        if (!Auth::user() || Auth::user()->role !== 'admin') {
+            return redirect()->route('dashboard')->with('error', 'Only admin can add books.');
         }
 
         $validated = $request->validate([
@@ -46,10 +56,11 @@ class BookController extends Controller
             'author' => 'required|string|max:255',
             'isbn' => 'nullable|string|max:20|unique:books,isbn',
             'genre' => 'required|string|max:100',
-            'description' => 'required|string',
-            'condition' => 'required|in:excellent,good,fair,poor',
+            'description' => 'nullable|string',
+            'condition' => 'required|in:new,good,fair,poor',
             'rental_price_per_day' => 'required|numeric|min:0.01|max:999.99',
             'security_deposit' => 'required|numeric|min:0|max:9999.99',
+            'lender_id' => 'required|exists:users,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -59,9 +70,8 @@ class BookController extends Controller
             $validated['image_path'] = $imagePath;
         }
 
-        // Add lender_id and set status
-        $validated['lender_id'] = Auth::id();
-        $validated['status'] = 'available';
+    // Set default status
+    $validated['status'] = 'available';
 
         $book = Book::create($validated);
 
@@ -81,12 +91,13 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
-        // Check if user owns this book
-        if ($book->lender_id !== Auth::id()) {
-            return redirect()->route('books.index')->with('error', 'You can only edit your own books.');
+        // Only admin can edit books
+        if (!Auth::user() || Auth::user()->role !== 'admin') {
+            return redirect()->route('books.index')->with('error', 'Only admin can edit books.');
         }
 
-        return view('books.edit', compact('book'));
+        $users = User::orderBy('name')->get(['id', 'name']);
+        return view('books.edit', compact('book', 'users'));
     }
 
     /**
@@ -94,9 +105,9 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        // Check if user owns this book
-        if ($book->lender_id !== Auth::id()) {
-            return redirect()->route('books.index')->with('error', 'You can only edit your own books.');
+        // Only admin can update books
+        if (!Auth::user() || Auth::user()->role !== 'admin') {
+            return redirect()->route('books.index')->with('error', 'Only admin can update books.');
         }
 
         $validated = $request->validate([
@@ -104,11 +115,12 @@ class BookController extends Controller
             'author' => 'required|string|max:255',
             'isbn' => 'nullable|string|max:20|unique:books,isbn,' . $book->id,
             'genre' => 'required|string|max:100',
-            'description' => 'required|string',
-            'condition' => 'required|in:excellent,good,fair,poor',
+            'description' => 'nullable|string',
+            'condition' => 'required|in:new,good,fair,poor',
             'rental_price_per_day' => 'required|numeric|min:0.01|max:999.99',
             'security_deposit' => 'required|numeric|min:0|max:9999.99',
-            'status' => 'required|in:available,rented,maintenance',
+            'status' => 'required|in:available,rented,maintenance,unavailable',
+            'lender_id' => 'required|exists:users,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -132,9 +144,9 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        // Check if user owns this book
-        if ($book->lender_id !== Auth::id()) {
-            return redirect()->route('books.index')->with('error', 'You can only delete your own books.');
+        // Only admin can delete books
+        if (!Auth::user() || Auth::user()->role !== 'admin') {
+            return redirect()->route('books.index')->with('error', 'Only admin can delete books.');
         }
 
         // Check if book is currently rented
@@ -193,11 +205,7 @@ class BookController extends Controller
      */
     public function home(Request $request)
     {
-        // Redirect non-borrowers to their appropriate dashboards
-        if (Auth::user()->role !== 'borrower') {
-            return redirect()->route('dashboard');
-        }
-        
+    // Show available books to any authenticated user
         $search = $request->get('search');
         
         $query = Book::where('status', 'available')

@@ -75,15 +75,16 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
-        switch ($user->role) {
-            case 'admin':
-                return redirect()->route('admin.dashboard');
-            case 'user':
-                return $this->userDashboard($request);
-            default:
-                return redirect()->route('login');
+        if (!$user instanceof User) {
+            return redirect()->route('login');
         }
+
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Only other role is 'user'
+        return $this->userDashboard($request);
     }
 
     /**
@@ -93,15 +94,11 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
-    // Get user statistics from database
+    // Get user statistics (borrower-centric)
     $stats = $this->getUserStats($user);
 
-    // Get user's books (for lenders)
-    $myBooks = Book::where('lender_id', $user->id)
-              ->with('lender')
-              ->latest()
-              ->take(5)
-              ->get();
+    // Lender-specific list removed in two-role model; keep for view compatibility as empty
+    $myBooks = collect();
 
     // Get user's rentals (as borrower)
     $myRentals = Rental::where('borrower_id', $user->id)
@@ -118,12 +115,7 @@ class DashboardController extends Controller
      */
     private function getUserStats($user)
     {
-        // Books statistics (as lender)
-        $myBooksCount = Book::where('lender_id', $user->id)->count();
-        $myAvailableBooks = Book::where('lender_id', $user->id)->where('status', 'available')->count();
-        $myRentedBooks = Book::where('lender_id', $user->id)->where('status', 'rented')->count();
-        
-        // Rental statistics (as borrower)
+    // Rental statistics (as borrower)
         $myRentals = Rental::where('borrower_id', $user->id)->count();
         $activeRentals = Rental::where('borrower_id', $user->id)
                               ->where('status', 'active')
@@ -150,20 +142,6 @@ class DashboardController extends Controller
         // Total available books in system
         $totalAvailableBooks = Book::where('status', 'available')->count();
         
-        // Earnings from lending (as lender)
-        $totalEarnings = Rental::whereHas('book', function($query) use ($user) {
-                               $query->where('lender_id', $user->id);
-                           })
-                           ->where('status', 'completed')
-                           ->sum('total_amount');
-        
-        // Books currently rented out by this user
-        $booksRentedOut = Rental::whereHas('book', function($query) use ($user) {
-                                $query->where('lender_id', $user->id);
-                            })
-                            ->where('status', 'active')
-                            ->count();
-        
         return [
             // Borrower stats
             'my_rentals' => $myRentals,
@@ -171,13 +149,6 @@ class DashboardController extends Controller
             'due_soon' => $dueSoon,
             'total_spent' => $totalSpent,
             'overdue_rentals' => $overdueRentals,
-            
-            // Lender stats
-            'my_books' => $myBooksCount,
-            'my_available_books' => $myAvailableBooks,
-            'my_rented_books' => $myRentedBooks,
-            'total_earnings' => $totalEarnings,
-            'books_rented_out' => $booksRentedOut,
             
             // General stats
             'total_available_books' => $totalAvailableBooks,

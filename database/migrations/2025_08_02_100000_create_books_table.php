@@ -26,7 +26,6 @@ return new class extends Migration
             $table->boolean('is_available')->default(true);
             $table->foreignId('lender_id')->constrained('users')->onDelete('cascade');
             $table->enum('status', ['available', 'rented', 'maintenance', 'unavailable'])->default('available');
-            
             $table->timestamps();
         });
     }
