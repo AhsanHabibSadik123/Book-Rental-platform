@@ -53,6 +53,8 @@ Route::middleware('auth')->group(function () {
 
     // Book Routes
     Route::resource('books', BookController::class);
+    Route::get('books/{book}/rent', [BookController::class, 'showRentForm'])->name('books.rent');
+    Route::post('books/{book}/rent', [BookController::class, 'processRent'])->name('books.rent.process');
     Route::get('/browse-books', [BookController::class, 'browse'])->name('books.browse');
     Route::get('/home', [BookController::class, 'home'])->name('books.home');
 

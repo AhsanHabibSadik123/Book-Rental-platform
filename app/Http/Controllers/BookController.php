@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class BookController extends Controller
 {
@@ -16,14 +18,31 @@ class BookController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $search = request('search');
+        $category = request('category');
 
+        $query = Book::query();
         if ($user && $user->role === 'admin') {
-            $books = Book::latest()->paginate(12);
+            // Admin sees all books
         } else {
-            $books = Book::where('lender_id', Auth::id())->latest()->paginate(12);
+            $query->where('lender_id', Auth::id());
         }
 
-        return view('user.myBooks', compact('books'));
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('author', 'LIKE', "%{$search}%")
+                  ->orWhere('genre', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%");
+            });
+        }
+        if ($category) {
+            $query->where('genre', $category);
+        }
+
+        $books = $query->latest()->paginate(12)->appends(['search' => $search, 'category' => $category]);
+
+        return view('user.myBooks', compact('books', 'search', 'category'));
     }
 
     /**
@@ -70,8 +89,8 @@ class BookController extends Controller
             $validated['image_path'] = $imagePath;
         }
 
-    // Set default status
-    $validated['status'] = 'available';
+        // Set default status
+        $validated['status'] = 'available';
 
         $book = Book::create($validated);
 
@@ -178,15 +197,15 @@ class BookController extends Controller
             'category' => 'nullable|string|max:100'
         ]);
 
-    $query = Book::where('status', 'available')->with('lender');
+        $query = Book::where('status', 'available')->with('lender');
 
         // Add search functionality
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
-                  ->orWhere('author', 'LIKE', "%{$search}%")
-                  ->orWhere('genre', 'LIKE', "%{$search}%")
-                  ->orWhere('description', 'LIKE', "%{$search}%");
+                    ->orWhere('author', 'LIKE', "%{$search}%")
+                    ->orWhere('genre', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%");
             });
         }
 
@@ -205,25 +224,100 @@ class BookController extends Controller
      */
     public function home(Request $request)
     {
-    // Show available books to any authenticated user
+        // Show available books to any authenticated user
         $search = $request->get('search');
-        
+
         $query = Book::where('status', 'available')
-                    ->with('lender');
-        
+            ->with('lender');
+
         // Add search functionality
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'LIKE', "%{$search}%")
-                  ->orWhere('author', 'LIKE', "%{$search}%")
-                  ->orWhere('genre', 'LIKE', "%{$search}%")
-                  ->orWhere('description', 'LIKE', "%{$search}%");
+                    ->orWhere('author', 'LIKE', "%{$search}%")
+                    ->orWhere('genre', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%");
             });
         }
-        
+
         $books = $query->latest()->paginate(12);
         $totalBooks = Book::where('status', 'available')->count();
-        
+
         return view('user.home', compact('books', 'search', 'totalBooks'));
+    }
+    /**
+     * Show the rent form for a book (user action)
+     */
+    public function showRentForm(Book $book)
+    {
+        if ($book->status !== 'available') {
+            return redirect()->route('books.browse')->with('error', 'Book is not available for rent.');
+        }
+        return view('books.rent', compact('book'));
+    }
+
+    /**
+     * Process the rent request (wallet check, confirmation, rental creation)
+     */
+    public function processRent(Request $request, Book $book)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        // Fetch as Eloquent model to avoid type issues with Authenticatable interface
+        $user = User::findOrFail(Auth::id());
+        if ($user->role !== 'user') {
+            return redirect()->route('books.browse')->with('error', 'Only users can rent books.');
+        }
+        if ($book->status !== 'available') {
+            return redirect()->route('books.browse')->with('error', 'Book is not available for rent.');
+        }
+
+        $validated = $request->validate([
+            'days' => 'required|integer|min:1|max:30',
+        ]);
+    $days = (int) $validated['days'];
+    $dailyRate = (float) $book->rental_price_per_day;
+    $deposit = (float) $book->security_deposit;
+    $totalCost = ($dailyRate * $days) + $deposit;
+
+        // Check wallet balance
+        if ($user->wallet < $totalCost) {
+            return redirect()->route('books.rent', $book->id)
+                ->with('error', 'Insufficient wallet balance. Please add funds to your wallet.');
+        }
+
+        // Show confirmation view before finalizing rental
+        if (!$request->has('confirm')) {
+            return view('books.rent_confirm', compact('book', 'days', 'totalCost'));
+        }
+
+        // Prevent renting own book
+        if ($book->lender_id === $user->id) {
+            return redirect()->route('books.browse')->with('error', 'You cannot rent your own book.');
+        }
+
+        // Deduct from wallet and create rental atomically
+    DB::transaction(function () use ($user, $book, $days, $dailyRate, $deposit, $totalCost) {
+            $user->wallet = (float)$user->wallet - (float)$totalCost;
+            $user->save();
+
+            $book->status = 'rented';
+            $book->save();
+
+            \App\Models\Rental::create([
+                'book_id' => $book->id,
+                'borrower_id' => $user->id,
+                'lender_id' => $book->lender_id,
+                'rental_start_date' => Carbon::today(),
+                'rental_end_date' => Carbon::today()->addDays((int) $days),
+                'daily_rate' => $dailyRate,
+                'total_amount' => $dailyRate * $days + $deposit,
+                'security_deposit' => $deposit,
+                'status' => 'active',
+            ]);
+        });
+
+        return redirect()->route('books.browse')->with('success', 'Book rented successfully!');
     }
 }

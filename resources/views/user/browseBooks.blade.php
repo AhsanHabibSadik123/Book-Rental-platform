@@ -200,35 +200,16 @@
     <main class="container py-5">
         <h1 class="mb-4 text-center text-white">Browse Available Books</h1>
         <!-- Search and Filters -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
-            <form action="{{ route('books.browse') }}" method="GET" class="space-y-4">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <!-- Search Input -->
-                    <div class="flex-1">
-                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search Books</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                            </div>
-                            <input
-                                type="text"
-                                name="search"
-                                id="search"
-                                value="{{ $search }}"
-                                placeholder="Search by title, author, genre..."
-                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        </div>
+        <div class="bg-white rounded shadow-sm border p-4 mb-4">
+            <form action="{{ route('books.browse') }}" method="GET">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label for="search" class="form-label">Search Books</label>
+                        <input type="text" name="search" id="search" value="{{ $search }}" class="form-control" placeholder="Search by title, author, genre...">
                     </div>
-
-                    <!-- Category Filter -->
-                    <div class="md:w-64">
-                        <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                        <select
-                            name="category"
-                            id="category"
-                            class="block w-full py-2 px-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <div class="col-md-4">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="category" id="category" class="form-select">
                             <option value="">All Categories</option>
                             <option value="fiction" {{ request('category') == 'fiction' ? 'selected' : '' }}>Fiction</option>
                             <option value="non-fiction" {{ request('category') == 'non-fiction' ? 'selected' : '' }}>Non-Fiction</option>
@@ -244,32 +225,12 @@
                             <option value="educational" {{ request('category') == 'educational' ? 'selected' : '' }}>Educational</option>
                         </select>
                     </div>
-
-                    <!-- Search Button -->
-                    <div class="flex items-end">
-                        <button
-                            type="submit"
-                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 flex items-center gap-2">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            Search
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i> Search
                         </button>
                     </div>
                 </div>
-
-                @if($search || request('category'))
-                <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-sm text-gray-600">Filters: </span>
-                    @if($search)
-                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Search: "{{ $search }}"</span>
-                    @endif
-                    @if(request('category'))
-                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Category: {{ ucfirst(str_replace('-', ' ', request('category'))) }}</span>
-                    @endif
-                    <a href="{{ route('books.browse') }}" class="text-sm text-gray-500 hover:text-gray-700 underline">Clear all filters</a>
-                </div>
-                @endif
             </form>
         </div>
 
@@ -305,17 +266,16 @@
         <div class="row">
             @forelse($books as $book)
             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="book-card h-100">
-                    <img src="{{ $book->image_path ? asset('storage/' . $book->image_path) : 'https://via.placeholder.com/220x320?text=No+Image' }}" alt="{{ $book->title }}">
-                    <div class="p-3">
-                        <div class="book-title">{{ $book->title }}</div>
-                        <div class="book-author">by {{ $book->author }}</div>
-                        <div class="book-genre">{{ $book->genre }}</div>
-                        <div class="book-condition">Condition: {{ ucfirst($book->condition) }}</div>
-                        <div class="book-price">₹{{ number_format($book->rental_price_per_day, 2) }}/day</div>
-                        <div class="mt-2">
-                            <a href="{{ route('books.show', $book) }}" class="btn btn-primary w-100">View Details</a>
-                        </div>
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="{{ $book->image_path ? asset('storage/' . $book->image_path) : 'https://via.placeholder.com/220x320?text=No+Image' }}" class="card-img-top" alt="{{ $book->title }}" style="height:320px;object-fit:cover;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate">{{ $book->title }}</h5>
+                        <div class="small text-muted mb-1">by {{ $book->author }}</div>
+                        <div class="small text-primary mb-1">{{ $book->genre }}</div>
+                        <div class="small mb-1">Condition: {{ ucfirst($book->condition) }}</div>
+                        <div class="fw-bold text-success mb-2">${{ number_format($book->rental_price_per_day, 2) }}/day</div>
+                        <a href="{{ route('books.show', $book) }}" class="btn btn-primary w-100 mt-auto">View Details</a>
+                        <a href="{{ route('books.rent', $book) }}" class="btn btn-success w-100 mt-2">Rent Now</a>
                     </div>
                 </div>
             </div>
@@ -327,6 +287,36 @@
                 </div>
             </div>
             @endforelse
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+            @if ($books->hasPages())
+                <nav>
+                    <ul class="pagination pagination-lg">
+                        {{-- Previous Page Link --}}
+                        @if ($books->onFirstPage())
+                            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                        @else
+                            <li class="page-item"><a class="page-link" href="{{ $books->previousPageUrl() }}" rel="prev">&laquo;</a></li>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @foreach ($books->links()->elements[0] as $page => $url)
+                            @if ($page == $books->currentPage())
+                                <li class="page-item active"><span class="page-link">{{ $page }}</span></li>
+                            @else
+                                <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
+                            @endif
+                        @endforeach
+
+                        {{-- Next Page Link --}}
+                        @if ($books->hasMorePages())
+                            <li class="page-item"><a class="page-link" href="{{ $books->nextPageUrl() }}" rel="next">&raquo;</a></li>
+                        @else
+                            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                        @endif
+                    </ul>
+                </nav>
+            @endif
         </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
